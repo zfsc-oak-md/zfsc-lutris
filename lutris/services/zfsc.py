@@ -64,7 +64,7 @@ class ZfscLoginDialog(ModalDialog):
         self.get_content_area().pack_start(grid, True, True, 0)
 
         hint = Gtk.Label(
-            label=_("Create a read-only token in zfsc:\nzfsc token mint --user <you> --name lutris"),
+            label=_("Ask a zfsc admin to run:\nzfsc token mint --user <you> --name lutris"),
             xalign=0,
             visible=True,
         )

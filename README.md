@@ -43,7 +43,7 @@ LUTRIS_RUNTIME_DIR=/path/to/runtime make apply
 
 ## 配置
 
-1. 在 zfsc 服务器上生成 token：
+1. 在 zfsc 服务器上生成 token（普通 viewer 可以让管理员代跑）：
 
    ```bash
    zfsc token mint --user alice --name lutris
