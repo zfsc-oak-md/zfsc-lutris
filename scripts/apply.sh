@@ -17,5 +17,11 @@ icon_dir="$runtime/icons/hicolor/scalable/apps"
 mkdir -p "$icon_dir"
 cp "$root/assets/zfsc.svg" "$icon_dir/zfsc.svg"
 
+# GTK only notices new files when the theme's cache is refreshed; without this
+# the sidebar keeps showing the generic fallback icon.
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -qtf "$runtime/icons/hicolor" || true
+fi
+
 echo "installed icon: $icon_dir/zfsc.svg"
 echo "applied ZFSC service to: $src"

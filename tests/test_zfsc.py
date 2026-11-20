@@ -227,6 +227,7 @@ class ZfscModuleTest(unittest.TestCase):
         self.assertEqual(game.appid, "RJ01234567")
         self.assertEqual(game.slug, "rj01234567")
         self.assertEqual(game.name, "Example")
+        self.assertEqual(game.runner, "wine")
         self.assertEqual(json.loads(game.details)["latest_file"]["id"], 42)
 
     def test_banner_normalizes_protocol_relative_url(self):

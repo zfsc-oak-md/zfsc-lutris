@@ -116,6 +116,7 @@ class ZfscGame(ServiceGame):
         game.appid = str(work.get("dlsite_id", ""))
         game.slug = game.appid.lower()
         game.name = work.get("title") or game.appid
+        game.runner = cls.runner
         game.details = json.dumps(work, ensure_ascii=False)
         return game
 
