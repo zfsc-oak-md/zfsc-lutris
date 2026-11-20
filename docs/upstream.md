@@ -43,9 +43,8 @@ make check
 
 1. 复制 `lutris/services/zfsc.py` 到 Lutris 源码树；
 2. 应用 `patches/0001-register-zfsc-service.patch`；
-3. 把 `assets/zfsc.svg` 放到 Lutris 的图标资源里；
-4. 跑 Lutris 的 `ruff` / `pylint` / `mypy` / `pytest`；
-5. 在 PR 说明里写清楚：
+3. 跑 Lutris 的 `ruff` / `pylint` / `mypy` / `pytest`；
+4. 在 PR 说明里写清楚：
    - 这是 self-hosted 服务，服务器地址由用户在连接窗口里填写；
    - 只读，不改用户库；
    - 下载使用用户自己的 zfsc token，不绕过任何 DRM；
@@ -57,7 +56,7 @@ make check
 - 是否应该做成通用 “self-hosted library” 服务，而不是绑定 zfsc？
 - 没有 lutris.net 的 installer，如何匹配已安装游戏？
   答案：Lutris 按 `games.service_id == service_games.appid` 合并，不需要 lutris.net。
-- 服务图标放哪里、是否要翻译？
+- 服务图标要不要补一个（目前侧栏用 Lutris 默认图标）、是否需要翻译？
 - 多版本安装什么时候支持？
 
 ## 补丁说明

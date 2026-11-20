@@ -24,7 +24,7 @@ class FlatpakManifestTest(unittest.TestCase):
 
     def test_identity(self):
         self.assertEqual(self.manifest["id"], APP_ID)
-        self.assertEqual(self.manifest["command"], "zfsc-lutris")
+        self.assertEqual(self.manifest["command"], "lutris")
         self.assertEqual(self.manifest["base"], "net.lutris.Lutris")
         self.assertEqual(self.manifest["base-version"], "stable")
 
@@ -43,20 +43,28 @@ class FlatpakManifestTest(unittest.TestCase):
         self.assertIn(f"share/applications/{APP_ID}.desktop", joined)
         self.assertIn(f"share/metainfo/{APP_ID}.metainfo.xml", joined)
 
+    def test_app_icon_matches_lutris(self):
+        commands = "\n".join(cmd for module in self.manifest["modules"] for cmd in module.get("build-commands", []))
+        self.assertIn("net.lutris.Lutris.svg", commands)
+        self.assertIn(f"apps/{APP_ID}.svg", commands)
+
     def test_desktop_entry_matches_app_id(self):
         desktop = (ROOT / "flatpak" / f"{APP_ID}.desktop").read_text(encoding="utf-8")
-        self.assertIn("Exec=zfsc-lutris", desktop)
+        self.assertIn("Name=Lutris/ZFSC", desktop)
+        self.assertIn("Exec=lutris", desktop)
         self.assertIn(f"Icon={APP_ID}", desktop)
 
     def test_metainfo_matches_app_id(self):
         metainfo = (ROOT / "flatpak" / f"{APP_ID}.metainfo.xml").read_text(encoding="utf-8")
         self.assertIn(f"<id>{APP_ID}</id>", metainfo)
+        self.assertIn("<name>Lutris/ZFSC</name>", metainfo)
         self.assertIn(f"{APP_ID}.desktop", metainfo)
 
-    def test_launcher_seeds_icon_from_bundle(self):
-        launcher = (ROOT / "flatpak" / "zfsc-lutris.sh").read_text(encoding="utf-8")
-        self.assertIn("/app/share/zfsc/zfsc.svg", launcher)
-        self.assertIn("exec lutris", launcher)
+    def test_no_custom_service_icon(self):
+        # The sidebar entry uses Lutris' default icon, so no zfsc.svg is shipped.
+        commands = "\n".join(cmd for module in self.manifest["modules"] for cmd in module.get("build-commands", []))
+        self.assertNotIn("zfsc.svg", commands)
+        self.assertFalse((ROOT / "assets").exists())
 
     def test_can_own_lutris_dbus_name(self):
         # Lutris registers its Gtk.Application as net.lutris.Lutris, and Flatpak

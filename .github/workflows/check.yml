@@ -35,7 +35,7 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Shellcheck
-        run: shellcheck scripts/*.sh flatpak/*.sh
+        run: shellcheck scripts/*.sh
 
       - name: Apply to upstream Lutris
         run: |
@@ -46,7 +46,6 @@ jobs:
 
           git -C build/lutris apply --check "$GITHUB_WORKSPACE/patches/0001-register-zfsc-service.patch"
 
-          export LUTRIS_RUNTIME_DIR="$RUNNER_TEMP/runtime"
           ./scripts/apply.sh build/lutris
           ./scripts/apply.sh build/lutris
 
@@ -54,4 +53,3 @@ jobs:
           init=build/lutris/lutris/services/__init__.py
           test "$(grep -c 'from lutris.services.zfsc import ZfscService' "$init")" = 1
           test "$(grep -c '"zfsc": ZfscService' "$init")" = 1
-          test -f "$LUTRIS_RUNTIME_DIR/icons/hicolor/scalable/apps/zfsc.svg"

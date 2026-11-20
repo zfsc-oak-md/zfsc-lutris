@@ -20,11 +20,10 @@ Flatpak 应用，方便 Steam Deck、Silverblue 这类不方便改系统 Lutris 
 ## 构建方式
 
 manifest 用 `base: net.lutris.Lutris`，构建时把 Flathub 官方 app 的 `/app`
-复制过来，然后只做三件事：
+复制过来，然后只做两件事：
 
 1. 用 `scripts/apply.py` 往 `site-packages/lutris/services/` 里加 `zfsc.py` 并注册；
-2. 装一个启动脚本 `zfsc-lutris`，首次运行时把服务图标放进 Lutris 的 runtime 目录；
-3. 换上本项目的 desktop 文件和 AppStream 元数据。
+2. 换上本项目的 desktop 文件和 AppStream 元数据。
 
 所以不需要编译 Lutris、Wine、VLC，一次构建几分钟。`finish-args` 和
 `add-extensions` 是从 Flathub manifest 抄过来的，上游换 runtime 时要同步。
@@ -182,7 +181,7 @@ prefix 的路径保存在配置里：如果它们本来就在宿主机路径（�
 - 连接 zfsc、刷新列表；
 - 安装一个有官方文件的作品；
 - 安装一个只有非官方文件的作品；
-- 左侧 ZFSC 图标正常显示（首次启动的图标铺设逻辑）；
+- 左侧 ZFSC 项显示 Lutris 默认图标；
 - `flatpak update` 后 token 仍然有效。
 
 ## 已知问题
@@ -195,8 +194,7 @@ prefix 的路径保存在配置里：如果它们本来就在宿主机路径（�
     io.github.zfsc_oak_md.ZfscLutris
   ```
 
-- **图标**：Lutris 只从 `runtime/icons` 找服务图标，由 `zfsc-lutris` 启动脚本
-  在首次运行时复制。直接 `flatpak run --command=lutris ...` 不会执行这段逻辑。
+- **图标**：侧栏的 ZFSC 项使用 Lutris 的默认图标，没有内置自定义服务图标。
 - **下载目录**：下载和安装都在沙箱的 home 权限内，和官方 Lutris 行为一致。
 - **和官方版同时启用 DLsite**：同一个作品可能出现两次。ZFSC 的 appid 就是
   RJ/VJ 号，一般只启用 ZFSC 即可。

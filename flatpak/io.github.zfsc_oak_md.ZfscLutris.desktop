@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
-Name=Lutris (ZFSC)
+Name=Lutris/ZFSC
 GenericName=Game Manager
 Comment=Play your ZFSC library with Lutris
-Exec=zfsc-lutris %U
+Exec=lutris %U
 Icon=io.github.zfsc_oak_md.ZfscLutris
 Terminal=false
 Categories=Game;Emulator;

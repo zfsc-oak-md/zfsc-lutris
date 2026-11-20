@@ -78,7 +78,7 @@ jobs:
           key=$(gpg --export "$FLATPAK_GPG_KEY" | base64 -w0)
           cat > "build/flatpak-repo/$APP_ID.flatpakref" <<EOF
           [Flatpak Ref]
-          Title=Lutris (ZFSC)
+          Title=Lutris/ZFSC
           Name=$APP_ID
           Branch=stable
           Url=${{ steps.pages.outputs.base_url }}

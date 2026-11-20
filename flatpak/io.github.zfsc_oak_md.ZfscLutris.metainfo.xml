@@ -3,7 +3,7 @@
   <id>io.github.zfsc_oak_md.ZfscLutris</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
-  <name>Lutris (ZFSC)</name>
+  <name>Lutris/ZFSC</name>
   <summary>Lutris with the self-hosted ZFSC game service</summary>
   <description>
     <p>
@@ -25,7 +25,7 @@
     <name>zfsc-oak-md</name>
   </developer>
   <provides>
-    <binary>zfsc-lutris</binary>
+    <binary>lutris</binary>
   </provides>
   <categories>
     <category>Game</category>

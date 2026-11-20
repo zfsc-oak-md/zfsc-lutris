@@ -14,7 +14,7 @@ id: io.github.zfsc_oak_md.ZfscLutris
 runtime: org.gnome.Platform
 runtime-version: "51"
 sdk: org.gnome.Sdk
-command: zfsc-lutris
+command: lutris
 default-branch: stable
 # The base app already carries the Lutris locales; splitting them again fails
 # across the sandboxed build's mount points and buys nothing here.
@@ -152,9 +152,9 @@ modules:
     buildsystem: simple
     build-commands:
       - test -x "${FLATPAK_DEST}/bin/lutris"
-      - install -Dm755 zfsc-lutris.sh "${FLATPAK_DEST}/bin/zfsc-lutris"
-      - install -Dm644 zfsc.svg "${FLATPAK_DEST}/share/zfsc/zfsc.svg"
-      - install -Dm644 zfsc.svg "${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.zfsc_oak_md.ZfscLutris.svg"
+      # Give the app Lutris' own icon.
+      - install -Dm644 "${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/net.lutris.Lutris.svg"
+        "${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.zfsc_oak_md.ZfscLutris.svg"
       - install -Dm644 io.github.zfsc_oak_md.ZfscLutris.desktop
         "${FLATPAK_DEST}/share/applications/io.github.zfsc_oak_md.ZfscLutris.desktop"
       - install -Dm644 io.github.zfsc_oak_md.ZfscLutris.metainfo.xml
@@ -171,11 +171,6 @@ modules:
       - type: dir
         path: ../scripts
         dest: scripts
-      - type: file
-        path: ../assets/zfsc.svg
-        dest-filename: zfsc.svg
-      - type: file
-        path: zfsc-lutris.sh
       - type: file
         path: io.github.zfsc_oak_md.ZfscLutris.desktop
       - type: file

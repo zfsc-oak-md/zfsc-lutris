@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copy the ZFSC service into a Lutris source tree and install its icon.
+# Copy the ZFSC service into a Lutris source tree.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -12,16 +12,4 @@ fi
 
 python3 "$root/scripts/apply.py" "$src"
 
-runtime="${LUTRIS_RUNTIME_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/lutris/runtime}"
-icon_dir="$runtime/icons/hicolor/scalable/apps"
-mkdir -p "$icon_dir"
-cp "$root/assets/zfsc.svg" "$icon_dir/zfsc.svg"
-
-# GTK only notices new files when the theme's cache is refreshed; without this
-# the sidebar keeps showing the generic fallback icon.
-if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -qtf "$runtime/icons/hicolor" || true
-fi
-
-echo "installed icon: $icon_dir/zfsc.svg"
 echo "applied ZFSC service to: $src"

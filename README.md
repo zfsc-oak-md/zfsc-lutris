@@ -24,16 +24,11 @@ git clone git@github.com:zfsc-oak-md/zfsc-lutris.git
 cd zfsc-lutris
 
 make fetch     # 拉取固定版本的 Lutris 源码到 build/lutris
-make apply     # 复制 zfsc.py、注册服务、安装图标
+make apply     # 复制 zfsc.py、注册服务
 make run       # 从源码运行 Lutris
 ```
 
-`make apply` 默认把图标装到 `~/.local/share/lutris/runtime/icons/hicolor/scalable/apps/zfsc.svg`。
-如果 Lutris 配置了自定义 runtime 目录，用：
-
-```bash
-LUTRIS_RUNTIME_DIR=/path/to/runtime make apply
-```
+ZFSC 在侧栏使用 Lutris 的默认占位图标，不再安装自定义图标。
 
 也可以手动应用到一个已有的 Lutris 源码树：
 
