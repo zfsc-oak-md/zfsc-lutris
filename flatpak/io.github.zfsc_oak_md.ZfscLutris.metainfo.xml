@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.zfsc_oak_md.ZfscLutris</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Lutris (ZFSC)</name>
+  <summary>Lutris with the self-hosted ZFSC game service</summary>
+  <description>
+    <p>
+      Unofficial Lutris build that includes the ZFSC service, so a self-hosted
+      ZFSC library shows up as an online game source. Connect with your own
+      server URL and API token; downloads use that token and the game is
+      installed as a regular Wine game.
+    </p>
+    <p>
+      This build is Lutris plus one service module and is not endorsed by the
+      Lutris project. The source code, including the patches applied here, is
+      available from the project page below.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.zfsc_oak_md.ZfscLutris.desktop</launchable>
+  <url type="homepage">https://github.com/zfsc-oak-md/zfsc-lutris</url>
+  <url type="bugtracker">https://github.com/zfsc-oak-md/zfsc-lutris/issues</url>
+  <developer id="io.github.zfsc_oak_md">
+    <name>zfsc-oak-md</name>
+  </developer>
+  <provides>
+    <binary>zfsc-lutris</binary>
+  </provides>
+  <categories>
+    <category>Game</category>
+    <category>Emulator</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-11-20"/>
+  </releases>
+</component>

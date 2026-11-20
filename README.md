@@ -49,6 +49,18 @@ LUTRIS_RUNTIME_DIR=/path/to/runtime make apply
 LUTRIS_ALLOW_LOCAL_PYTHON_PACKAGES=1 make run
 ```
 
+## Flatpak
+
+不想自己打补丁可以用 flatpak 版（独立应用 id，可以和官方 Lutris 共存）：
+
+```bash
+flatpak install --user --from \
+  https://zfsc-oak-md.github.io/zfsc-lutris/io.github.zfsc_oak_md.ZfscLutris.flatpakref
+```
+
+只支持 x86_64。构建、发布、从官方 Lutris 迁移配置的说明见
+[docs/flatpak.md](docs/flatpak.md)。
+
 ## 配置
 
 1. 在 zfsc 服务器上生成 token（普通 viewer 可以让管理员代跑）：

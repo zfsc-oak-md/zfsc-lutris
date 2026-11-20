@@ -2,7 +2,7 @@ LUTRIS_REF ?= eace36e97bd0e4d65bcb361b0d785d75433c65e9
 LUTRIS_DIR ?= build/lutris
 export LUTRIS_REF
 
-.PHONY: fetch apply check run clean
+.PHONY: fetch apply check run clean flatpak
 
 fetch:
 	./scripts/fetch-lutris.sh $(LUTRIS_DIR)
@@ -22,5 +22,8 @@ check:
 run: apply
 	cd $(LUTRIS_DIR) && ./bin/lutris
 
+flatpak:
+	./scripts/build-flatpak.sh
+
 clean:
-	rm -rf build
+	rm -rf build .flatpak-builder

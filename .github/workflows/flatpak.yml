@@ -1,0 +1,106 @@
+name: flatpak
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "flatpak-v*"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: flatpak
+  cancel-in-progress: false
+
+env:
+  APP_ID: io.github.zfsc_oak_md.ZfscLutris
+  BASE_APP: net.lutris.Lutris
+  # Keep in sync with flatpak/io.github.zfsc_oak_md.ZfscLutris.yml
+  RUNTIME_VERSION: "51"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install flatpak tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends flatpak flatpak-builder
+
+      - name: Install runtime, SDK and base app
+        run: |
+          flatpak remote-add --if-not-exists --user flathub \
+            https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y --noninteractive flathub \
+            "org.gnome.Sdk//$RUNTIME_VERSION" \
+            "org.gnome.Platform//$RUNTIME_VERSION" \
+            "$BASE_APP//stable"
+          echo "base app: $(flatpak info --user --show-commit "$BASE_APP//stable")"
+
+      - name: Import signing key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "::error::FLATPAK_GPG_PRIVATE_KEY is not set; see docs/flatpak.md"
+            exit 1
+          fi
+          printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --import
+
+      - name: Build
+        env:
+          FLATPAK_GPG_KEY: ${{ secrets.FLATPAK_GPG_KEY_ID }}
+          FLATPAK_BASE_COMMIT: ${{ vars.FLATPAK_BASE_COMMIT }}
+        run: ./scripts/build-flatpak.sh
+
+      - name: Check repository
+        run: |
+          test -s build/flatpak-repo/summary
+          test -s build/flatpak-repo/summary.sig
+          test -s "build/$APP_ID.flatpak"
+
+      - name: Set up Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Write .flatpakref
+        env:
+          FLATPAK_GPG_KEY: ${{ secrets.FLATPAK_GPG_KEY_ID }}
+        run: |
+          key=$(gpg --export "$FLATPAK_GPG_KEY" | base64 -w0)
+          cat > "build/flatpak-repo/$APP_ID.flatpakref" <<EOF
+          [Flatpak Ref]
+          Title=Lutris (ZFSC)
+          Name=$APP_ID
+          Branch=stable
+          Url=${{ steps.pages.outputs.base_url }}
+          SuggestRemoteName=zfsc
+          RuntimeRepo=https://flathub.org/repo/flathub.flatpakrepo
+          IsRuntime=false
+          GPGKey=$key
+          EOF
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/flatpak-repo
+
+      - name: Deploy repository
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Attach bundle to release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" --generate-notes
+          gh release upload "$GITHUB_REF_NAME" "build/$APP_ID.flatpak" --clobber

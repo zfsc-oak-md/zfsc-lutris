@@ -70,3 +70,10 @@ make check
 
 模块文件本身由 `scripts/apply.sh` 复制，不放在补丁里，避免同一份代码维护两遍。
 需要生成上游用的完整补丁时，先复制模块，再用 `git diff` 生成即可。
+
+## Flatpak
+
+flatpak 构建不编译 Lutris，而是在 Flathub 的 `net.lutris.Lutris` 上叠一个模块，
+因此不需要在这里固定和验证 Lutris 源码的每个提交；但建议让 `LUTRIS_REF` 和
+base app 里的 Lutris 版本保持一致。流程见 [docs/flatpak.md](flatpak.md)。
+

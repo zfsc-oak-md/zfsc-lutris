@@ -1,0 +1,178 @@
+# Unofficial Lutris build with the ZFSC service baked in.
+#
+# Rather than rebuilding all of Lutris, this manifest layers one small module
+# on top of the Flathub Lutris app: `base: net.lutris.Lutris` copies the
+# official app's /app tree into this build, then the module drops in
+# lutris/services/zfsc.py and registers it. A build takes minutes instead of
+# hours, but ships the same content as the base app.
+#
+# finish-args and the extension points below are copied from
+# flathub/net.lutris.Lutris (master @ f1101a50cd26e078f7d9eb95a93f6336e29cc56b).
+# When the base app is rebuilt against a newer runtime, re-check those blocks
+# and bump runtime-version/base-version here. See docs/flatpak.md.
+id: io.github.zfsc_oak_md.ZfscLutris
+runtime: org.gnome.Platform
+runtime-version: "51"
+sdk: org.gnome.Sdk
+command: zfsc-lutris
+default-branch: stable
+# The base app already carries the Lutris locales; splitting them again fails
+# across the sandboxed build's mount points and buys nothing here.
+separate-locales: false
+
+base: net.lutris.Lutris
+base-version: stable
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=all
+  - --share=network
+  - --allow=multiarch
+  - --allow=devel
+  - --talk-name=org.gnome.Mutter.DisplayConfig
+  - --talk-name=org.freedesktop.ScreenSaver
+  - --system-talk-name=org.freedesktop.UDisks2
+  - --filesystem=home
+  - --filesystem=~/Games
+  - --filesystem=/run/media
+  # For Steam Deck HDR support
+  - --env=LD_LIBRARY_PATH=/usr/lib/extensions/vulkan/gamescope/lib
+  - --filesystem=xdg-run/gamescope-0:ro
+  # For Debian
+  - --filesystem=/media
+  - --filesystem=~/.var/app/com.valvesoftware.Steam:ro
+  - --filesystem=~/.config/MangoHud:ro
+  - --env=PATH=/app/bin:/usr/bin:/app/utils/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/app/jre/bin/:/usr/lib/extensions/vulkan/gamescope/bin
+  - --env=GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0:/app/lib32/gstreamer-1.0:/app/lib/i386-linux-gnu/codecs-extra/lib/gstreamer-1.0:/app/lib/i386-linux-gnu/gstreamer-1.0:/usr/lib/extensions/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/codecs-extra/lib/gstreamer-1.0:/usr/lib/i386-linux-gnu/codecs-extra/lib/gstreamer-1.0:/usr/lib/x86_64-linux-gnu/gstreamer-1.0:/usr/lib/i386-linux-gnu/gstreamer-1.0
+  # System tray icon
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.Flatpak
+  # Needed for appimages
+  - --env=APPIMAGE_EXTRACT_AND_RUN=1
+  # See: https://github.com/flathub/net.lutris.Lutris/pull/368#issuecomment-1751381312
+  - --env=WEBKIT_DISABLE_DMABUF_RENDERER=1
+  # --- umu ---
+  # Install the umu runtime at $HOST_XDG_DATA_HOME
+  # See: https://github.com/Open-Wine-Components/umu-launcher/pull/229
+  - --filesystem=xdg-data/umu:create
+  # Pressure Vessel
+  - --env=XDG_DATA_DIRS=/app/share:/usr/lib/extensions/vulkan/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share:/usr/lib/pressure-vessel/overrides/share
+  - --allow=per-app-dev-shm
+
+inherit-extensions:
+  - org.winehq.Wine.gecko
+  - org.winehq.Wine.mono
+
+add-extensions:
+  org.freedesktop.Platform.Compat.i386:
+    directory: lib/i386-linux-gnu
+    version: "26.08"
+
+  org.freedesktop.Platform.Compat.i386.Debug:
+    directory: lib/debug/lib/i386-linux-gnu
+    version: "26.08"
+    no-autodownload: true
+
+  org.freedesktop.Platform.GL32:
+    directory: lib/i386-linux-gnu/GL
+    version: "26.08"
+    versions: "26.08;26.08-extra;1.4"
+    subdirectories: true
+    no-autodownload: true
+    autodelete: false
+    add-ld-path: lib
+    merge-dirs: vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d;vdpau
+    download-if: active-gl-driver
+    enable-if: active-gl-driver
+    autoprune-unless: active-gl-driver
+
+  org.freedesktop.Platform.GL32.Debug:
+    directory: lib/debug/lib/i386-linux-gnu/GL
+    version: "26.08"
+    versions: "26.08;26.08-extra;1.4"
+    subdirectories: true
+    no-autodownload: true
+    add-ld-path: lib
+    merge-dirs: vulkan/icd.d;glvnd/egl_vendor.d;egl/egl_external_platform.d;OpenCL/vendors;lib/dri;lib/d3d;lib/gbm;vulkan/explicit_layer.d;vulkan/implicit_layer.d;vdpau
+    enable-if: active-gl-driver
+    autoprune-unless: active-gl-driver
+
+  org.freedesktop.Platform.VAAPI.Intel.i386:
+    directory: lib/i386-linux-gnu/dri/intel-vaapi-driver
+    version: "26.08"
+    versions: "26.08"
+    autodelete: false
+    no-autodownload: true
+    add-ld-path: lib
+    download-if: have-intel-gpu
+    autoprune-unless: have-intel-gpu
+
+  org.freedesktop.Platform.VAAPI.nvidia.i386:
+    directory: i386/nvidia-vaapi-driver
+    version: "26.08"
+    versions: "26.08"
+    autodelete: false
+    no-autodownload: true
+    add-ld-path: lib
+    download-if: have-kernel-module-nvidia
+    autoprune-unless: have-kernel-module-nvidia
+
+  org.freedesktop.Platform.codecs_extra.i386:
+    directory: lib/i386-linux-gnu/codecs-extra
+    version: "26.08-extra"
+    autodelete: false
+    add-ld-path: lib
+
+  org.gtk.Gtk3theme.Adwaita-dark:
+    directory: share/themes/Adwaita-dark
+    version: "3.22"
+    autodownload: true
+
+  org.freedesktop.Platform.VulkanLayer.gamescope:
+    directory: lib/extensions/vulkan/gamescope
+    version: "26.08"
+    autodownload: true
+    autodelete: false
+
+  org.freedesktop.Platform.VulkanLayer.MangoHud:
+    directory: lib/extensions/vulkan/MangoHud
+    version: "26.08"
+    autodownload: true
+    autodelete: false
+
+modules:
+  - name: zfsc-lutris
+    buildsystem: simple
+    build-commands:
+      - test -x "${FLATPAK_DEST}/bin/lutris"
+      - install -Dm755 zfsc-lutris.sh "${FLATPAK_DEST}/bin/zfsc-lutris"
+      - install -Dm644 zfsc.svg "${FLATPAK_DEST}/share/zfsc/zfsc.svg"
+      - install -Dm644 zfsc.svg "${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/io.github.zfsc_oak_md.ZfscLutris.svg"
+      - install -Dm644 io.github.zfsc_oak_md.ZfscLutris.desktop
+        "${FLATPAK_DEST}/share/applications/io.github.zfsc_oak_md.ZfscLutris.desktop"
+      - install -Dm644 io.github.zfsc_oak_md.ZfscLutris.metainfo.xml
+        "${FLATPAK_DEST}/share/metainfo/io.github.zfsc_oak_md.ZfscLutris.metainfo.xml"
+      # The base app's own launcher would show up as a second Lutris entry.
+      - rm -f "${FLATPAK_DEST}/share/applications/net.lutris.Lutris.desktop"
+        "${FLATPAK_DEST}/share/metainfo/net.lutris.Lutris.metainfo.xml"
+      - for site in "${FLATPAK_DEST}"/lib/python3.*/site-packages; do
+        python3 scripts/apply.py "$site"; done
+    sources:
+      - type: dir
+        path: ../lutris
+        dest: lutris
+      - type: dir
+        path: ../scripts
+        dest: scripts
+      - type: file
+        path: ../assets/zfsc.svg
+        dest-filename: zfsc.svg
+      - type: file
+        path: zfsc-lutris.sh
+      - type: file
+        path: io.github.zfsc_oak_md.ZfscLutris.desktop
+      - type: file
+        path: io.github.zfsc_oak_md.ZfscLutris.metainfo.xml
