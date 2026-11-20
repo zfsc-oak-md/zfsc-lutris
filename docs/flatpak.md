@@ -200,3 +200,8 @@ prefix 的路径保存在配置里：如果它们本来就在宿主机路径（�
 - **下载目录**：下载和安装都在沙箱的 home 权限内，和官方 Lutris 行为一致。
 - **和官方版同时启用 DLsite**：同一个作品可能出现两次。ZFSC 的 appid 就是
   RJ/VJ 号，一般只启用 ZFSC 即可。
+- **不能和官方 Lutris 同时运行**：Lutris 在代码里把 `Gtk.Application` 的 id
+  硬编码成 `net.lutris.Lutris`，而 Flatpak 默认只允许应用拥有与自己 id 同名的
+  D-Bus 名。manifest 里的 `--own-name=net.lutris.Lutris` 补上了这个权限，代价是
+  两个 Lutris 会争同一个 D-Bus 名：官方版正在运行时启动 ZFSC 版会报
+  `Failed to register: ... ServiceUnknown`，反过来也一样。

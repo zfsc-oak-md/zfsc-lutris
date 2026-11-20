@@ -39,7 +39,7 @@ def normalize_server_url(value: str) -> str:
 
 
 class ZfscLoginDialog(ModalDialog):
-    """Ask for the ZFSC server URL and a personal API token."""
+    """Ask for the ZFSC server URL and a personal API key."""
 
     def __init__(self, service: "ZfscService", parent: Gtk.Widget | None = None):
         super().__init__(title=_("Connect to ZFSC"), parent=parent)
@@ -59,12 +59,12 @@ class ZfscLoginDialog(ModalDialog):
 
         grid.attach(Gtk.Label(label=_("Server URL"), xalign=0, visible=True), 0, 0, 1, 1)
         grid.attach(self.url_entry, 1, 0, 1, 1)
-        grid.attach(Gtk.Label(label=_("API token"), xalign=0, visible=True), 0, 1, 1, 1)
+        grid.attach(Gtk.Label(label=_("API Key"), xalign=0, visible=True), 0, 1, 1, 1)
         grid.attach(self.token_entry, 1, 1, 1, 1)
         self.get_content_area().pack_start(grid, True, True, 0)
 
         hint = Gtk.Label(
-            label=_("Ask a zfsc admin to run:\nzfsc token mint --user <you> --name lutris"),
+            label=_("Log in to zfsc, open /account/api, and copy your personal API key"),
             xalign=0,
             visible=True,
         )
@@ -167,10 +167,10 @@ class ZfscService(OnlineService):
         try:
             request.get()
         except UnauthorizedAccessError as ex:
-            raise AuthTokenExpiredError(_("The ZFSC token was rejected")) from ex
+            raise AuthTokenExpiredError(_("The ZFSC API key was rejected")) from ex
         except HTTPError as ex:
             if ex.code == 401:
-                raise AuthTokenExpiredError(_("The ZFSC token was rejected")) from ex
+                raise AuthTokenExpiredError(_("The ZFSC API key was rejected")) from ex
             raise
         return request.json
 
@@ -186,7 +186,7 @@ class ZfscService(OnlineService):
             raise AuthenticationError(_("ZFSC server URL is not configured"))
         token = self.load_token()
         if not token:
-            raise AuthenticationError(_("ZFSC API token is not configured"))
+            raise AuthenticationError(_("ZFSC API key is not configured"))
         if params:
             clean = {key: value for key, value in params.items() if value is not None}
             path = f"{path}?{urlencode(clean)}"
@@ -265,7 +265,7 @@ class ZfscService(OnlineService):
         try:
             work = self.api(f"{API_PREFIX}/works/{quote(str(appid), safe='')}")
         except AuthTokenExpiredError as ex:
-            raise AuthenticationError(_("The ZFSC token expired; reconnect the service")) from ex
+            raise AuthenticationError(_("The ZFSC API key expired; reconnect the service")) from ex
         except HTTPError as ex:
             if ex.code == 404:
                 raise UnavailableGameError(_("This work is not available on ZFSC")) from ex

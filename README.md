@@ -15,7 +15,7 @@
 
 - Lutris 的运行依赖（GTK3、WebKit2、Wine 等），见 [Lutris 下载页](https://lutris.net/downloads) 或上游仓库的安装说明。
 - 一个已经实现 `/api/v1` 的 zfsc 实例。接口定义见 [docs/zfsc-api.md](docs/zfsc-api.md)。
-- 一个 zfsc API Token。
+- 一个 zfsc 账号：登录后在 `/account/api` 查看自己的 API Key。
 
 ## 快速开始
 
@@ -51,7 +51,7 @@ LUTRIS_ALLOW_LOCAL_PYTHON_PACKAGES=1 make run
 
 ## Flatpak
 
-不想自己打补丁可以用 flatpak 版（独立应用 id，可以和官方 Lutris 共存）：
+不想自己打补丁可以用 flatpak 版（独立应用 id，可以和官方 Lutris 安装共存；两者共用 Lutris 的 D-Bus 名，所以不能同时运行）：
 
 ```bash
 flatpak install --user --from \
@@ -63,7 +63,8 @@ flatpak install --user --from \
 
 ## 配置
 
-1. 在 zfsc 服务器上生成 token（普通 viewer 可以让管理员代跑）：
+1. 登录 zfsc，打开 `/account/api`，复制页面上显示的个人 API Key。刷新会立即让旧 Key 失效。
+   自动化或多客户端也可以在服务器上额外签发一次性令牌：
 
    ```bash
    zfsc token mint --user alice --name lutris
@@ -72,7 +73,7 @@ flatpak install --user --from \
 2. 启动 Lutris，打开 **Preferences → Sources**，启用 **ZFSC**，按提示重启 Lutris。
 3. 左侧栏点击 **ZFSC**，点刷新按钮；第一次会弹出连接窗口，填入：
    - Server URL，例如 `https://zfsc.example.com`
-   - API token
+   - API Key
 4. 刷新成功后，zfsc 中所有有文件的作品会出现在 ZFSC 列表里。
 
 安装时 Lutris 会直接向 `/api/v1/files/{id}` 发起带 `Authorization: Bearer` 的下载请求，

@@ -58,6 +58,11 @@ class FlatpakManifestTest(unittest.TestCase):
         self.assertIn("/app/share/zfsc/zfsc.svg", launcher)
         self.assertIn("exec lutris", launcher)
 
+    def test_can_own_lutris_dbus_name(self):
+        # Lutris registers its Gtk.Application as net.lutris.Lutris, and Flatpak
+        # only permits owning the app's own id unless finish-args say otherwise.
+        self.assertIn("--own-name=net.lutris.Lutris", self.manifest["finish-args"])
+
 
 if __name__ == "__main__":
     unittest.main()

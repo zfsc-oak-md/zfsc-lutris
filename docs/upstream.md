@@ -31,7 +31,7 @@ make check
 #    - 刷新列表
 #    - 安装一个有官方文件的作品
 #    - 安装一个只有非官方文件的作品
-#    - 删掉 token 后确认会重新弹连接窗口
+#    - 删掉本地 token 文件或刷新 Key 后确认会重新弹连接窗口
 ```
 
 如果上游改了 `lutris/services/__init__.py` 的结构，`scripts/apply.py` 会报错

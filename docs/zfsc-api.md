@@ -12,8 +12,9 @@ Authorization: Bearer zfsc_...
 Accept: application/json
 ```
 
-Token 由 zfsc 签发，只存哈希；权限固定为 viewer（可读作品、可下载文件，不能进后台）。
-建议格式 `zfsc_` + 32 字节随机数的 base64url，只显示一次。
+Token 由 zfsc 签发，权限固定为 viewer（可读作品、可下载文件，不能进后台）。
+个人 API Key 在 zfsc 的 `/account/api` 页面查看，可随时刷新；刷新后旧 Key 立即
+失效。服务端只存加盐哈希，Key 值由 `SESSION_SECRET` 和随机 salt 派生。
 
 Token 失效时返回 `401`，不要重定向到登录页。
 
@@ -149,7 +150,10 @@ LIMIT 1;
 
 ## Token 管理
 
-最小实现可以只做 CLI：
+每个账号登录 zfsc 后打开 `/account/api` 即可查看和刷新自己的唯一密钥，普通
+viewer 不需要管理员代操作。刷新后旧 Key 立即失效，API 请求随即返回 `401`。
+
+管理员也可以给自动化或多客户端额外签发一次性令牌：
 
 ```bash
 zfsc token mint --user alice --name lutris
@@ -157,7 +161,7 @@ zfsc token list
 zfsc token revoke <id>
 ```
 
-Token 只显示一次；数据库存 `hash(SESSION_SECRET || token)`。撤销后立即生效。
+`mint` 签发的令牌只显示一次；数据库只存哈希，撤销后立即生效。
 
 ## 冒烟测试
 
