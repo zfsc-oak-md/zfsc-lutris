@@ -41,6 +41,14 @@ LUTRIS_RUNTIME_DIR=/path/to/runtime make apply
 ./scripts/apply.sh /path/to/lutris
 ```
 
+如果 Python 依赖装在 `$HOME` 下（`pip --user`，或 Lutris 本身装在 `~/.local`），
+上游 `bin/lutris` 默认会把 `$HOME` 从 `sys.path` 中剔除，`make run` 会报
+`No module named '...'`。这种环境显式放开：
+
+```bash
+LUTRIS_ALLOW_LOCAL_PYTHON_PACKAGES=1 make run
+```
+
 ## 配置
 
 1. 在 zfsc 服务器上生成 token（普通 viewer 可以让管理员代跑）：
