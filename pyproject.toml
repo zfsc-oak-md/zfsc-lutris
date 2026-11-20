@@ -1,0 +1,36 @@
+[tool.ruff]
+extend-exclude = ["build"]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["A", "ARG", "B", "E", "F", "I", "W", "PERF", "RUF"]
+ignore = [
+    "RUF001",
+    "E402",
+    "RUF012",
+    "PERF401",
+    "RUF100",
+    "PERF203",
+    "RUF015",
+    "PERF102",
+    "RUF005",
+    "A003",
+    "B905",
+    "ARG002",
+    "E722",
+    "B904",
+    "B008",
+    "ARG005",
+    "ARG001",
+    "PERF402",
+    "A002",
+    "ARG004",
+    "B020",
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["lutris"]
+known-third-party = ["gi"]

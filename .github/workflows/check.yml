@@ -1,0 +1,57 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  LUTRIS_REF: eace36e97bd0e4d65bcb361b0d785d75433c65e9
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: python -m pip install --disable-pip-version-check ruff
+
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: Compile
+        run: python -m compileall -q lutris scripts tests
+
+      - name: Test
+        run: python -m unittest discover -s tests -v
+
+      - name: Shellcheck
+        run: shellcheck scripts/*.sh
+
+      - name: Apply to upstream Lutris
+        run: |
+          git init -q build/lutris
+          git -C build/lutris remote add origin https://github.com/lutris/lutris.git
+          git -C build/lutris fetch --depth 1 origin "$LUTRIS_REF"
+          git -C build/lutris checkout --detach -q FETCH_HEAD
+
+          git -C build/lutris apply --check "$GITHUB_WORKSPACE/patches/0001-register-zfsc-service.patch"
+
+          export LUTRIS_RUNTIME_DIR="$RUNNER_TEMP/runtime"
+          ./scripts/apply.sh build/lutris
+          ./scripts/apply.sh build/lutris
+
+          python -m compileall -q build/lutris/lutris/services/zfsc.py
+          init=build/lutris/lutris/services/__init__.py
+          test "$(grep -c 'from lutris.services.zfsc import ZfscService' "$init")" = 1
+          test "$(grep -c '"zfsc": ZfscService' "$init")" = 1
+          test -f "$LUTRIS_RUNTIME_DIR/icons/hicolor/scalable/apps/zfsc.svg"
